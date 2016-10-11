@@ -6,14 +6,18 @@ var gitHubApiToken = process.env['gitHubApiToken'];
 var repoOwner = process.argv[2];
 var repoName = process.argv[3];
 
-var getRepoContributors = ("repoOwner", "repoName", (err, result) => {
+function printError(err) {
   if (err) {
-    console.log("Errors:", err);
+    console.log(err);
   }
+}
 
-  let endPoint  = 'https://api.github.com';
+var getRepoContributors = ("repoOwner", "repoName", (err, result) => {
+  printError();
+
+  let endPoint = 'https://api.github.com';
   let options = {
-    url:        endPoint + '/repos/' + repoOwner + '/' + repoName + '/contributors',
+    url: endPoint + '/repos/' + repoOwner + '/' + repoName + '/contributors',
     json: true,
     headers: {
       'User-Agent': 'request',
@@ -22,11 +26,9 @@ var getRepoContributors = ("repoOwner", "repoName", (err, result) => {
   };
 
   request.get(options, function (err, response, body) {
-    if (err) {
-      console.log(err);
-    }
+    printError();
 
-    body.forEach (function (user) {
+    body.forEach(function (user) {
       let url = user.avatar_url;
       let filePath = './avatars/' + user.login;
       downloadImageByURL(url, filePath);
@@ -35,10 +37,8 @@ var getRepoContributors = ("repoOwner", "repoName", (err, result) => {
 
   function downloadImageByURL(url, filePath) {
 
-    request.get(url, function(err, response, body) {
-      if (err) {
-        console.log(err);
-      }
+    request.get(url, function (err, response, body) {
+      printError();
       console.log("Success: ", filePath);
 
       let fileType = response.headers['content-type'].split('/')[1];
