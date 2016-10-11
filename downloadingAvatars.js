@@ -2,15 +2,42 @@ var request = require("request");
 
 var fs = require("fs");
 
-// var getRepoContributors = ("repoOwner", "repoName", (err, result) => {
-//   let endPoint  = 'https://api.github.com';
-//   let options =
+var repoOwner = process.argv[2];
+var repoName = process.argv[3];
 
-//   console.log("Errors:", err);
-//   console.log("Result:", result);
-// });
+var getRepoContributors = ("repoOwner", "repoName", (err, result) => {
+  if (err) {
+    console.log("Errors:", err);
+  }
 
-// getRepoContributors();
+  let endPoint  = 'https://api.github.com';
+  let options = {
+    url:        endPoint + '/repos/' + repoOwner + '/' + repoName + '/contributors',
+    json: true,
+    headers: {
+      'User-Agent': 'nicadams'
+    }
+  };
+
+
+  request.get(options, function (err, response, body) {
+    if (err) {
+      console.log(err);
+    }
+
+    console.log(body);
+
+  });
+
+  // result.forEach (function (user) {
+  //   var url = user.avatar_url;
+  //   var filePath = './avatars/' + user.login;
+  //   downloadImageByURL(url, filePath);
+  // })
+
+});
+
+getRepoContributors();
 
 
 function downloadImageByURL(url, filePath) {
@@ -20,8 +47,9 @@ function downloadImageByURL(url, filePath) {
       console.log(err);
     }
     console.log("Success: ", filePath);
-    debugger;
-    request(url).pipe(fs.createWriteStream(filePath));
+
+    var fileType = response.headers['content-type'].split('/')[1];
+    request(url).pipe(fs.createWriteStream(filePath + '.' + fileType));
     // console.log("Response body:", body);
 
 
@@ -32,4 +60,7 @@ function downloadImageByURL(url, filePath) {
 
 }
 
-downloadImageByURL('https://avatars.githubusercontent.com/u/8368880?v=3', './avatars/' + user.ID + );
+// var url = user.avatar_url;
+// var filePath = './avatars/';
+
+// downloadImageByURL();
